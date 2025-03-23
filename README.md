@@ -1,0 +1,1 @@
+Proyecto full-stack en React. Este es una demostración de mis conocimientos en el desarrollo de aplicaciones web. He integrado funcionalidades de Inteligencia Artificial para ofrecer una experiencia innovadora, al tiempo que aplico metodologías de diseño modular con CSS para crear una interfaz de usuario atractiva y eficiente.

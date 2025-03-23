@@ -1,0 +1,22 @@
+.app{
+    display: flex;
+    width: 100vw;
+    min-height: 100vh;
+    margin: 0 auto;
+}
+.chat-table{
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+}
+
+@media (max-width: 1100px) {
+    .app{
+        width: 95vw;
+    }
+    .chat-table {
+        flex-direction: column;
+        align-items: center;
+    }
+}
