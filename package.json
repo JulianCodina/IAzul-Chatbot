@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "react-copy-to-clipboard": "^5.1.0",
-    "react-icons": "^5.5.0",
-    "react-speech-kit": "^3.0.1",
-    "react-speech-recognition": "^4.0.0"
-  }
-}
