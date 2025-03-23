@@ -17,6 +17,8 @@ export default function Chatbot() {
     const [recognition, setRecognition] = useState(null);
     const [speechSynthesis, setSpeechSynthesis] = useState(null);
     const [speaking, setSpeaking] = useState(false);
+    const [voices, setVoices] = useState([]);
+    const [selectedVoice, setSelectedVoice] = useState(null);
     
     /*useEffect(() => {
         fetch("http://127.0.0.1:8000/consultar")
@@ -129,7 +131,7 @@ export default function Chatbot() {
         }
     }
     function speakText(text) {
-        if (!speechSynthesis) return;
+        if (!speechSynthesis || !selectedVoice) return;
         
         // Detener cualquier habla en curso
         speechSynthesis.cancel();
@@ -138,6 +140,7 @@ export default function Chatbot() {
         utterance.lang = 'es-ES';
         utterance.rate = 1;
         utterance.pitch = 1;
+        utterance.voice = selectedVoice;
         
         utterance.onstart = () => {
             setSpeaking(true);
@@ -204,6 +207,31 @@ export default function Chatbot() {
         if (typeof window !== 'undefined') {
             const synthesis = window.speechSynthesis;
             setSpeechSynthesis(synthesis);
+            
+            // Función para obtener las voces disponibles
+            const getVoices = () => {
+                const availableVoices = synthesis.getVoices();
+                const spanishVoices = availableVoices.filter(voice => voice.lang.startsWith('es'));
+                setVoices(spanishVoices);
+                
+                // Buscar la voz de Elena
+                const elenaVoice = spanishVoices.find(voice => 
+                    voice.name.includes('Elena') && voice.name.includes('Natural')
+                );
+                
+                if (elenaVoice) {
+                    setSelectedVoice(elenaVoice);
+                } else if (spanishVoices.length > 0) {
+                    setSelectedVoice(spanishVoices[0]);
+                }
+            };
+
+            // Las voces pueden tardar en cargarse
+            if (synthesis.getVoices().length > 0) {
+                getVoices();
+            } else {
+                synthesis.onvoiceschanged = getVoices;
+            }
             
             synthesis.onend = () => {
                 setSpeaking(false);

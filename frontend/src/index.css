@@ -17,6 +17,7 @@
 }
 #root{
   margin: auto;
+  width: 100%;
 }
 body {
   margin: 0;
