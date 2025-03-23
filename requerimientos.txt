@@ -1,0 +1,18 @@
+Principal: 
+- Chatbot funcional
+- Conectar a una Base de Datos
+
+Secundario:
+- Poder hablar
+- Login -> historial de chat
+
+pagina referencia
+https://www.aichatting.net/es/
+
+Textos:
+- Aun con todas las funciones que puede realizar el asistente, esta bastante limitado, no creen? De hecho, se lo podría capacitar para hacer muchas otras cosas. No es genial?
+- Imagínense todos los campos en los que se puede aplicar este programa. No seria de muchísima ayuda?
+- Imagínense lo lejos que puede llegar. Desde proyectos pequeños, como un portfolio, donde te cuente la información de la persona, hasta proyectos gigantes, como gestor de inventario de diversos objetos de distintos almacenes.
+- Lo super que debe ser poder preguntarle algo 24/7 y no tener que esperar la respuesta del lunes que viene.
+- Lo lindo de obtener la información que nos interesa de forma tan eficiente e instantánea.
+- Poder hablarle en el idioma que te apetezca y obtener aun asi el resultado correcto.

@@ -1,0 +1,32 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color: #111111;
+
+  background-image: linear-gradient(150deg, #b6eae6 0, #a3e2e2 12.5%, #8ddade 25%, #74d0db 37.5%, #55c6d8 50%, #29bbd6 62.5%, #00b1d5 75%, #00a8d5 87.5%, #009fd5 100%);
+  background-attachment: fixed; 
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+#root{
+  margin: auto;
+}
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+textarea{
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+
