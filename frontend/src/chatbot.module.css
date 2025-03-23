@@ -267,7 +267,7 @@ textarea:focus {
 }
 @media (max-width: 500px) {
     .main-container{
-        width: calc(100% - 60px);
+        width: calc(100% - 30px);
     }
     .consulta, .respuesta, textarea{
         font-size: 11px;
