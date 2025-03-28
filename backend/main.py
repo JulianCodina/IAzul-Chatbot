@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 import chatbot as bot
 
 app = FastAPI()
@@ -13,12 +14,11 @@ app.add_middleware(
     allow_headers=["*"],  
 )
 
-@app.get("/consultar")
-def get_prueba():
-    return {"mensaje": bot.prueba()}
+class Consulta(BaseModel):
+    consulta: str
 
-@app.get("/responder")
-def get_prueba():
-    return {"mensaje": bot.prueba()}
+@app.post("/responder")
+def responder(consulta: Consulta):
+    return {"mensaje": bot.chatbot(consulta.consulta)}
 
 # Ejecutar con: uvicorn main:app --reload

@@ -32,20 +32,76 @@
     margin: 0;
     font-size: 15px;
 }
-.header .img{
-    width: 30px;
-    height: 30px;
+.header .avatar{
+    width: 25px;
+    height: 25px;
     margin-right: 10px;
     padding: 3px;
     border-radius: 50%;
+    border: solid 3px #ffffff;
     box-shadow: 1px 1px 5px 1px #00f7ffb2;
+    background-color: #dcf6ff;
+}
+.header .info{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0 0 auto;
+    padding: 5px;
+    border-radius: 50%;
+    z-index: 6;
+    background-color: #ffffff;
+    width: 20px;
+    height: 20px;
+}
+.header .info img{
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+.header .info:hover{
+    background-color: #f1f1f1;
+}
+.header .info:hover img{
+    filter: brightness(0) saturate(100%) invert(48%) sepia(95%) saturate(1265%) hue-rotate(165deg) brightness(91%) contrast(101%);
+}
+.info-container{
+    display: flex;
+    position: relative;
+    margin-top: 30px;
+    left: -230px;
+    z-index: 5;
+}
+.info-msg{
+    position: absolute;
+    opacity: 100;
+    width: 250px;
+    height: auto;
+    border: solid 1px #e0e0e0;
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 10px;
+    margin: 0px;
+    font-size: 12px;
+    text-align: center; 
+}
+.dark{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+    opacity: 0.3;
+    z-index: 4;
 }
 .volume{
     display: flex;
     padding: 5px;
     border-radius: 50%;
-    margin: 0 5px 0 auto;
+    margin: 0 0 0 5px;
     align-items: center;
+    cursor: pointer;
 }
 .header .on{
     height: 20px;
@@ -67,7 +123,7 @@
 .msg-container{
     display: flex;
     height: 100%;
-    margin-right: -10px;
+    margin-right: -15px;
     flex-direction: column;
     padding-right: 5px;
     overflow-y: scroll;
@@ -85,6 +141,71 @@
 }
 .msg-container::-webkit-scrollbar-track {
     background: rgba(0, 159, 213, 0.1); 
+}
+.sin-msj{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    margin-top: 15px;
+}
+.sin-msj .chatbot{
+    margin-top: 10px;
+    width: auto;
+    height: 70px;
+}
+.welcome-title{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 20px;
+    font-weight: 600;
+}
+.welcome-title h4{
+    font-size: 22px;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+}
+.welcome-title .iazul{
+    background-image: linear-gradient(150deg, #41d1ad 0%, #006b8f 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.sin-msj p{
+    opacity: 0.6;
+    margin: 0;
+    font-size: 15px;
+}
+.suggestions{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    width: 100%;
+    margin: 10px;
+}
+.suggestions p{
+    display: inline-block;
+    margin: 0;
+    padding: 4px 10px;
+    border: 2px solid #76e4ff;
+    color: #009fd5;
+    border-radius: 10px;
+    opacity: 1;
+    width: auto;
+    max-width: 80%;
+    text-align: center;
+    cursor: pointer;
+}
+.suggestions p:hover{
+    background-image: linear-gradient(150deg, #41d1ad 0%, #009fd5 100%);
+    color: #ffffff;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    border: 2px solid #ffffff;
 }
 .fecha {
     height: 20px;
@@ -159,6 +280,7 @@
     border-radius: 50%;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 }
 .respuesta img{
     width: 20px;
@@ -213,7 +335,7 @@ textarea {
     field-sizing: content;
     flex: 1;
     min-width: 0;
-    padding: 5px 10px;
+    padding: 5px 15px 7px;
     border-radius: 15px;
     font-size: 16px;
     color: #111111;
@@ -269,10 +391,30 @@ textarea:focus {
     .main-container{
         width: calc(100% - 30px);
     }
+    .header .titulo h4{
+        font-size: 15px;
+    }
+    .header .titulo p{
+        font-size: 12px;
+    }
     .consulta, .respuesta, textarea{
         font-size: 11px;
     }
     textarea{
         padding: 8px 10px 5px 10px;
+    }
+    .welcome-title h4{
+        font-size: 18px;
+    }
+    .sin-msj p{
+        font-size: 12px;
+    }
+    .suggestions p{
+        font-size: 12px;
+    }
+}
+@media (max-width: 400px) {
+    .header .titulo p{
+        display: none;
     }
 }

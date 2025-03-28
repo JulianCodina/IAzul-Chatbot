@@ -1,15 +1,10 @@
 import { useEffect, useState } from "react";
 import style from './chatbot.module.css'
-
-const fecha1 = new Date(2025, 2, 19, 14, 30);
-const fecha2 = new Date(2025, 2, 20, 14, 50);
+import supabase from '../utils/supabase'
 
 export default function Chatbot() {
     const [consulta, setConsulta] = useState("")
-    const [historial, setHistorial] = useState({
-        "1": { "consulta": "Que onda maquina!", "respuesta": "Hola, soy IAzul", "fecha": fecha1 },
-        "2": { "consulta": "Y que eres?!", "respuesta": "Soy un Asistente chatbot al que le puedes preguntar cualquier cosa", "fecha": fecha2 }
-    });
+    const [historial, setHistorial] = useState({});
     const [espera, setEspera] = useState(false);
     const [volume, setVolume] = useState(false);
     const [isListening, setIsListening] = useState(false);
@@ -19,16 +14,63 @@ export default function Chatbot() {
     const [speaking, setSpeaking] = useState(false);
     const [voices, setVoices] = useState([]);
     const [selectedVoice, setSelectedVoice] = useState(null);
-    
-    /*useEffect(() => {
-        fetch("http://127.0.0.1:8000/consultar")
-          .then((res) => res.json())
-          .then((data) => setText(data.mensaje))
-          .catch((err) => console.error(err));
-      }, []);*/
+    const [respuestaIA, setRespuestaIA] = useState("");
+    const [suggestions, setSuggestions] = useState([
+        "¿Tienen stock del iphone 14 pro?",
+        "¿Cuánto cuesta la tableta grafica?",
+        "¿Cuáles fueron las últimas compras?",
+        "¿Cuál es el horario de atención?",
+        "¿Tienen servicio técnico?",
+        "¿Aceptan tarjetas de crédito?",
+        "¿Hacen envíos a domicilio?",
+        "¿Tienen garantía los productos?",
+        "¿Cuál es el precio de la RTX 3080?",
+        "¿Cuánto cuesta un lavavajillas?",
+        "¿Tienen algo de Logitech?",
+    ]);
+    const [randomSuggestions, setRandomSuggestions] = useState([]);
+    const [info, setInfo] = useState(false);
+    const [user, setUser] = useState(1);
 
+    function Info(){
+        return(
+            <div className={style["info-container"]}>
+                <p className={style["info-msg"]}>
+                    IAzul es un asistente experimental en fase de pruebas. Aunque me esfuerzo para que sea precisa, puede cometer errores. La información proporcionada debe ser verificada y no debe tomarse como consejo definitivo.
+                </p>
+            </div>
+        )
+    }
+    function SinMsj(){
+        return(
+            <div className={style["sin-msj"]}>
+                <img src="assets/chat.png" alt="chats" className={style["chatbot"]}/>
+                <div className={style["welcome-title"]}>
+                    <h4>Bienvenido, soy</h4><h4 className={style["iazul"]}>IAzul</h4>
+                </div>
+                <p>¡Escríbeme tu primera pregunta!</p>
+                <p>Estoy listo para ayudarte.</p>
+                <br />
+                <p> Aquí algunas ideas para empezar:</p>
+                <div className={style["suggestions"]}>
+                    <p onClick={() => handleSubmit("¿Quién te creó y para qué?")}>
+                        ¿Quién te creó y para qué?
+                    </p>
+                    {randomSuggestions.map((suggestion, index) => (
+                        <p key={index} onClick={() => handleSubmit(suggestion)}>
+                            {suggestion}
+                        </p>
+                    ))}
+                </div>
+            </div>
+        )
+    }
     function Mensajes() {
         const inicio = new Date(2000, 1, 1, 1, 1); 
+        
+        if (Object.keys(historial).length === 0) {
+            return <SinMsj/>;
+        }
         
         return (
             <>
@@ -80,18 +122,19 @@ export default function Chatbot() {
     function handleChange(e){
         setConsulta(e.target.value);
     }
-    function handleSubmit() {
-        if (consulta.trim().length === 0) return;
+    function handleSubmit(consultaDirecta = null) {
+        const consultaAEnviar = consultaDirecta || consulta;
+        if (consultaAEnviar.trim().length === 0) return;
         if (espera) return;
 
         const now = new Date();
-        const count = Object.keys(historial).length + 1; // Genera un nuevo ID
+        const count = Object.keys(historial).length + 1;
 
         setHistorial(prevHistorial => ({
             ...prevHistorial,
             [count]: {
-                "consulta": consulta,
-                "respuesta": "Estoy pensando...", // Respuesta vacía inicialmente
+                "consulta": consultaAEnviar,
+                "respuesta": "Estoy pensando...",
                 "fecha": now
             }
         }));
@@ -180,72 +223,164 @@ export default function Chatbot() {
             container.scrollTop = container.scrollHeight; 
         }
     }
+    
     useEffect(() => {
         scrollToBottom()
-    }, [historial])
+    }, [historial]) // DISLIZADOR
 
     useEffect(() =>{
         if (!espera) return;
 
-        setTimeout(() => {
-            setHistorial(prevHistorial => {
-                const lastKey = Object.keys(prevHistorial).pop(); // Obtiene el ID del último mensaje
-                return {
-                    ...prevHistorial,
-                    [lastKey]: {
-                        ...prevHistorial[lastKey], // Mantiene los datos anteriores
-                        "respuesta": "Respuesta de IA\n \n asdasdasd" // Reemplaza la respuesta
-                    }
-                };
-            });
-            setEspera(false);
-            volume && speakText("Hola soy IAzul, Respuesta de IA")
-        }, 3000);
-    }, [espera]);
+        const obtenerRespuesta = async () => {
+
+            const lastKey = Object.keys(historial).pop();
+            const consulta = historial[lastKey].consulta;
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/responder", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ consulta: consulta })
+                });
+                const data = await response.json();
+                setHistorial(prevHistorial => {
+                    const lastKey = Object.keys(prevHistorial).pop();
+                    return {
+                        ...prevHistorial,
+                        [lastKey]: {
+                            ...prevHistorial[lastKey],
+                            "respuesta": data.mensaje
+                        }
+                    };
+                });
+                setRespuestaIA(data.mensaje);
+                setEspera(false);
+                
+                // Insertar en la base de datos después de que tengamos la respuesta
+                const { error } = await supabase.from('consultas_chatbot').insert({
+                    id_user: user,
+                    consulta: consulta,
+                    respuesta: data.mensaje,
+                    fecha: new Date().toISOString()
+                });
+                
+                if (error) {
+                    console.error("Error al insertar en la base de datos:", error);
+                }
+            } catch (error) {
+                console.error("Error al llamar a la API:", error);
+                setRespuestaIA("Lo siento, ha ocurrido un error al procesar tu consulta.");
+            } finally {
+                setEspera(false);
+                if (volume && selectedVoice && speechSynthesis) {
+                    speakText(respuestaIA);
+                }
+            }
+        };
+
+        obtenerRespuesta();
+    }, [espera, volume, selectedVoice, speechSynthesis]); // ENVIA CONSULTA A API
 
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const synthesis = window.speechSynthesis;
-            setSpeechSynthesis(synthesis);
-            
-            // Función para obtener las voces disponibles
-            const getVoices = () => {
-                const availableVoices = synthesis.getVoices();
-                const spanishVoices = availableVoices.filter(voice => voice.lang.startsWith('es'));
-                setVoices(spanishVoices);
-                
-                // Buscar la voz de Elena
-                const elenaVoice = spanishVoices.find(voice => 
-                    voice.name.includes('Elena') && voice.name.includes('Natural')
-                );
-                
-                if (elenaVoice) {
-                    setSelectedVoice(elenaVoice);
-                } else if (spanishVoices.length > 0) {
-                    setSelectedVoice(spanishVoices[0]);
-                }
-            };
+        
+        if (typeof window !== 'undefined') {    // NARRADOR
+            try {
+                const synthesis = window.speechSynthesis;
+                if (synthesis) {
+                    setSpeechSynthesis(synthesis);
+                    
+                    // Función para obtener las voces disponibles
+                    const getVoices = () => {
+                        try {
+                            const availableVoices = synthesis.getVoices();
+                            if (availableVoices) {
+                                const spanishVoices = availableVoices.filter(voice => voice.lang.startsWith('es'));
+                                setVoices(spanishVoices);
+                                
+                                // Buscar la voz de Elena
+                                const elenaVoice = spanishVoices.find(voice => 
+                                    voice.name.includes('Elena') && voice.name.includes('Natural')
+                                );
+                                
+                                if (elenaVoice) {
+                                    setSelectedVoice(elenaVoice);
+                                } else if (spanishVoices.length > 0) {
+                                    setSelectedVoice(spanishVoices[0]);
+                                }
+                            }
+                        } catch (error) {
+                            console.log('Error al obtener voces:', error);
+                        }
+                    };
 
-            // Las voces pueden tardar en cargarse
-            if (synthesis.getVoices().length > 0) {
-                getVoices();
-            } else {
-                synthesis.onvoiceschanged = getVoices;
+                    // Las voces pueden tardar en cargarse
+                    if (synthesis.getVoices().length > 0) {
+                        getVoices();
+                    } else {
+                        synthesis.onvoiceschanged = getVoices;
+                    }
+                    
+                    synthesis.onend = () => {
+                        setSpeaking(false);
+                    };
+                }
+            } catch (error) {
+                console.log('Error al inicializar síntesis de voz:', error);
             }
-            
-            synthesis.onend = () => {
-                setSpeaking(false);
-            };
         }
-    }, []);
+    }, []); // NARRADOR
+
+    useEffect(() => {
+        async function getHistorial() {
+            const { data: datos, error } = await supabase.from('consultas_chatbot').select().eq('id_user', user)
+            
+            if (error) {
+                console.error('Error al obtener datos:', error.message)
+                return
+            }
+            if (datos) {
+                const historialFormateado = datos.reduce((acc, dato) => {
+                    acc[dato.id] = {
+                        consulta: dato.consulta,
+                        respuesta: dato.respuesta,
+                        fecha: new Date(dato.fecha)
+                    };
+                    return acc;
+                }, {});
+                setHistorial(historialFormateado);
+            }
+        }
+        getHistorial()
+    }, []) // SUPABASE
+
+    useEffect(() => {
+        const availableIndexes = Array.from({length: suggestions.length}, (_, i) => i);
+        const randomIndexes = [];
+        for (let i = 0; i < 3; i++) {
+            const randomPosition = Math.floor(Math.random() * availableIndexes.length);
+            randomIndexes.push(availableIndexes.splice(randomPosition, 1)[0]);
+        }
+        const selectedSuggestions = randomIndexes.map(index => suggestions[index]);
+        setRandomSuggestions(selectedSuggestions);
+    }, []); // SUGERENCIAS
+    
 
     return (
         <div className={style["main-container"]}>
+            {info && (
+                <div className={style["dark"]}/>
+            )}
             <div className={style["header"]}>
-                <img className={style["img"]} src="assets/chatbot.png"/>
+                <img className={style["avatar"]} src="assets/chatbot.png"/>
                 <div className={style["titulo"]}>
                     <h3>IAzul •</h3>
                     <p>Tu asistente chatbot</p>
+                </div>
+                <div className={style["info"]} onClick={() => setInfo(!info)} onMouseLeave={() => setInfo(false)}>
+                    <img src="assets/info.png"/>
+                    {info && <Info/>}
                 </div>
                 <div className={style["volume"]} onClick={() => setVolume(!volume)}>
                     {volume ? (
@@ -266,12 +401,18 @@ export default function Chatbot() {
                         className={style["textarea"]}
                         value={consulta} 
                         placeholder="Escribe tu pregunta" 
-                        onChange={handleChange} 
+                        onChange={handleChange}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !isListening) {
+                                e.preventDefault();
+                                handleSubmit();
+                            }
+                        }}
                     />
                 )}
                 <div className={style["img"]}>
                     {consulta ? (
-                        <img className={style["button"]} src="assets/submit.png" onClick={handleSubmit}/>
+                        <img className={style["button"]} src="assets/submit.png" onClick={() => handleSubmit(consulta)}/>
                     ):(
                         <img className={style["button"]} src="assets/mic.png" onClick={handleVoice}/>
                     )}
