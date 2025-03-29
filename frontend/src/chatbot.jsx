@@ -32,7 +32,7 @@ export default function Chatbot() {
     const [info, setInfo] = useState(false);
     const [menu, setMenu] = useState(false);
 
-    const [user, setUser] = useState(2);
+    const [user, setUser] = useState(3);
 
     function Info(){
         return(
@@ -266,13 +266,20 @@ export default function Chatbot() {
             const consulta = historial[lastKey].consulta;
 
             try {
-                const response = await fetch("http://127.0.0.1:8000/responder", {
+                console.log('Intentando conectar a:', import.meta.env.VITE_API_URL);
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/responder`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json',
                     },
                     body: JSON.stringify({ consulta: consulta })
                 });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
                 setHistorial(prevHistorial => {
                     const lastKey = Object.keys(prevHistorial).pop();
@@ -299,14 +306,15 @@ export default function Chatbot() {
                     console.error("Error al insertar en la base de datos:", error);
                 }
             } catch (error) {
-                console.error("Error al llamar a la API:", error);
+                console.error("Error detallado al llamar a la API:", error);
+                console.error("URL de la API:", import.meta.env.VITE_API_URL);
                 setHistorial(prevHistorial => {
                     const lastKey = Object.keys(prevHistorial).pop();
                     return {
                         ...prevHistorial,
                         [lastKey]: {
                             ...prevHistorial[lastKey],
-                            "respuesta": "Lo siento, ha ocurrido un error al procesar tu consulta."
+                            "respuesta": "Lo siento, ha ocurrido un error al procesar tu consulta. Por favor, intenta de nuevo más tarde."
                         }
                     };
                 });
