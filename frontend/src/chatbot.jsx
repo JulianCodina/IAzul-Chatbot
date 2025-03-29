@@ -32,8 +32,9 @@ export default function Chatbot() {
     const [info, setInfo] = useState(false);
     const [menu, setMenu] = useState(false);
 
-    const [user, setUser] = useState(3);
+    const [user, setUser] = useState(2);
 
+    // COMPONENTES
     function Info(){
         return(
             <div className={style["info-container"]}>
@@ -109,19 +110,18 @@ export default function Chatbot() {
                                 </div>
                                 <p>{msg.fecha?.toTimeString().slice(0, 5)}</p>
                             </div>
-                            {msg.respuesta && (!espera || Object.keys(historial).pop() !== key) && (
+                            {msg.respuesta === "Estoy pensando..." ? (
+                                <div className={style["pensando"]}>
+                                    <p>{msg.respuesta}</p>
+                                </div>
+                            ) : msg.respuesta && (
                                 <div className={style["respuesta"]}>
                                     <div className={style["p"]}>
                                         {msg.respuesta.split('\n').map((line, index) => (
-                                            <p key={index}>{line}</p> // Cada línea en un <p> separado
+                                            <p key={index}>{line}</p>
                                         ))}
                                     </div>
                                     <CopyButton texto={msg.respuesta} />
-                                </div>
-                            )}
-                            {msg.respuesta && espera && Object.keys(historial).pop() === key && (
-                                <div className={style["pensando"]}>
-                                    <p>{msg.respuesta}</p>
                                 </div>
                             )}
                         </div>
@@ -131,6 +131,7 @@ export default function Chatbot() {
         );
     }
 
+    // FUNCIONES
     function handleChange(e){
         setConsulta(e.target.value);
     }
@@ -142,17 +143,76 @@ export default function Chatbot() {
         const now = new Date();
         const count = Object.keys(historial).length + 1;
 
+        // Guardamos la consulta actual en una variable
+        const consultaActual = {
+            "consulta": consultaAEnviar,
+            "respuesta": "Estoy pensando...",
+            "fecha": now
+        };
+
         setHistorial(prevHistorial => ({
             ...prevHistorial,
-            [count]: {
-                "consulta": consultaAEnviar,
-                "respuesta": "Estoy pensando...",
-                "fecha": now
-            }
+            [count]: consultaActual
         }));
         
         setConsulta("");
         setEspera(true);
+
+        // Enviamos la consulta inmediatamente
+        enviarConsulta(consultaAEnviar, count);
+    }
+    async function enviarConsulta(consulta, key) {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/responder`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ consulta: consulta })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            // Actualizamos el historial
+            setHistorial(prevHistorial => ({
+                ...prevHistorial,
+                [key]: {
+                    ...prevHistorial[key],
+                    "respuesta": data.mensaje
+                }
+            }));
+            
+            setRespuestaIA(data.mensaje);
+            
+            // Guardamos en la base de datos
+            const { error } = await supabase.from('consultas_chatbot').insert({
+                id_user: user,
+                consulta: consulta,
+                respuesta: data.mensaje,
+                fecha: new Date().toISOString()
+            });
+            
+            if (error) {
+                console.error("Error al insertar en la base de datos:", error);
+            }
+        } catch (error) {
+            console.error("Error detallado al llamar a la API:", error);
+            console.error("URL de la API:", import.meta.env.VITE_API_URL);
+            setHistorial(prevHistorial => ({
+                ...prevHistorial,
+                [key]: {
+                    ...prevHistorial[key],
+                    "respuesta": "Lo siento, ha ocurrido un error al procesar tu consulta. Por favor, intenta de nuevo más tarde."
+                }
+            }));
+        } finally {
+            setEspera(false);
+        }
     }
     function handleVoice() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -260,76 +320,6 @@ export default function Chatbot() {
     useEffect(() => {
         scrollToBottom()
     }, [historial]) // DISLIZADOR
-
-    useEffect(() =>{
-        if (!espera) return;
-
-        const obtenerRespuesta = async () => {
-            const lastKey = Object.keys(historial).pop();
-            const consulta = historial[lastKey].consulta;
-
-            try {
-                console.log('Intentando conectar a:', import.meta.env.VITE_API_URL);
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/responder`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({ consulta: consulta })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                // Primero actualizamos el historial
-                setHistorial(prevHistorial => {
-                    const lastKey = Object.keys(prevHistorial).pop();
-                    return {
-                        ...prevHistorial,
-                        [lastKey]: {
-                            ...prevHistorial[lastKey],
-                            "respuesta": data.mensaje
-                        }
-                    };
-                });
-                
-                setEspera(false);
-                setRespuestaIA(data.mensaje);
-                
-                // Luego guardamos en la base de datos
-                const { error } = await supabase.from('consultas_chatbot').insert({
-                    id_user: user,
-                    consulta: consulta,
-                    respuesta: data.mensaje,
-                    fecha: new Date().toISOString()
-                });
-                
-                if (error) {
-                    console.error("Error al insertar en la base de datos:", error);
-                }
-            } catch (error) {
-                console.error("Error detallado al llamar a la API:", error);
-                console.error("URL de la API:", import.meta.env.VITE_API_URL);
-                setHistorial(prevHistorial => {
-                    const lastKey = Object.keys(prevHistorial).pop();
-                    return {
-                        ...prevHistorial,
-                        [lastKey]: {
-                            ...prevHistorial[lastKey],
-                            "respuesta": "Lo siento, ha ocurrido un error al procesar tu consulta. Por favor, intenta de nuevo más tarde."
-                        }
-                    };
-                });
-            } finally {
-                setEspera(false);
-            }
-        };
-        obtenerRespuesta();
-    }, [espera, narrador, selectedVoice, speechSynthesis]); // ENVIA CONSULTA A API
 
     useEffect(() => {
         if (narrador && selectedVoice && speechSynthesis) {

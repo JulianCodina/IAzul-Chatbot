@@ -50,16 +50,17 @@ def analisisIA(consulta):
     Recuerda seguir estas instrucciones al pie de la letra.
     
     Esquema de la BD:
-    compras: id_c (bigint), id_p (bigint), fecha (timestamp), proveedor (varchar), cantidad (bigint), total (double), costo_unit (double)
-    inventario: id_producto (bigint), stock_inicial (bigint), stock_actual (bigint), id (bigint)
-    productos: id (bigint), nombre (varchar), categoria (varchar), marca (varchar), precio (double), fecha_ingreso (date)
-    ventas: id_v (bigint), id_p (bigint), fecha (timestamp), cliente (varchar), cantidad (bigint), total (double)
+    tabla inventario: id_producto (bigint), stock_inicial (bigint), stock_actual (bigint), id (bigint).
+    tabla productos: id (bigint), nombre (varchar), categoria (varchar), marca (varchar), precio (double), fecha_ingreso (date). NO TIENE CAMPO STOCK.
+    tabla compras: id_c (bigint), id_p (bigint), fecha (timestamp), proveedor (varchar), cantidad (bigint), total (double), costo_unit (double).
+    tabla ventas: id_v (bigint), id_p (bigint), fecha (timestamp), cliente (varchar), cantidad (bigint), total (double).
     
     Ejemplos:
     - consulta: cuando Nacio Michael Jackson? | respuesta: Nació el 29 de agosto del 1958
     - consulta: que mouse tienen? | respuesta: SELECT nombre, marca, precio FROM productos WHERE nombre LIKE '%mouse%'
     - consulta: Cuál es el precio de la RTX 3080? | respuesta: SELECT nombre, marca, precio from productos where nombre like '%rtx 3080%'
-    - consulta: cual es el producto mas vendido? | respuesta: SELECT p.nombre, p.marca, p.precio, SUM(v.cantidad) AS total_vendido FROM productos p JOIN ventas v ON p.id_producto = v.id_producto GROUP BY p.nombre_producto ORDER BY total_vendido DESC LIMIT 1;
+    - consulta: cual es el producto mas vendido? | respuesta: SELECT p.nombre, p.marca, p.precio, SUM(v.cantidad) AS total_vendido FROM productos p JOIN ventas v ON p.id = v.id_p GROUP BY p.nombre ORDER BY total_vendido DESC LIMIT 1;
+    - consulta: que celulares tienen stock? | respuesta: SELECT p.nombre, p.marca, p.precio, i.stock_actual FROM productos p JOIN inventario i ON p.id = i.id_producto WHERE i.stock_actual > 0 AND p.categoria = 'celulares';
     """
     
     AIresponse = client.chat.completions.create(
