@@ -80,9 +80,13 @@ export default function Chatbot() {
             return <SinMsj/>;
         }
         
+        // Convertir el historial a un array y ordenarlo por fecha
+        const historialOrdenado = Object.entries(historial)
+            .sort(([, a], [, b]) => a.fecha - b.fecha);
+        
         return (
             <>
-                {Object.entries(historial).map(([key, msg], index, arr) => {
+                {historialOrdenado.map(([key, msg], index, arr) => {
                     const prevDate = index > 0 ? arr[index - 1][1].fecha : inicio;
                     const currentDate = msg.fecha;
     
@@ -261,7 +265,6 @@ export default function Chatbot() {
         if (!espera) return;
 
         const obtenerRespuesta = async () => {
-
             const lastKey = Object.keys(historial).pop();
             const consulta = historial[lastKey].consulta;
 
@@ -281,6 +284,8 @@ export default function Chatbot() {
                 }
                 
                 const data = await response.json();
+                
+                // Primero actualizamos el historial
                 setHistorial(prevHistorial => {
                     const lastKey = Object.keys(prevHistorial).pop();
                     return {
@@ -291,10 +296,11 @@ export default function Chatbot() {
                         }
                     };
                 });
+                
                 setEspera(false);
                 setRespuestaIA(data.mensaje);
                 
-                // Insertar en la base de datos después de que tengamos la respuesta
+                // Luego guardamos en la base de datos
                 const { error } = await supabase.from('consultas_chatbot').insert({
                     id_user: user,
                     consulta: consulta,
