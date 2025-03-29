@@ -17,7 +17,7 @@ client = Together(api_key = api_key)
 
 def analisisIA(consulta):
     
-    prompt = f"""Eres IAzul, tu propósito es ayudar a los clientes del local respondiendo sus preguntas o generando consultas SQL cuando sea necesario.
+    prompt = f"""Eres IAzul una asistente cuyo propósito es ayudar a los clientes del local respondiendo sus preguntas o generando consultas SQL cuando sea necesario.
     Instrucciones:
     - Si la consulta requiere obtener información específica de la base de datos, responde únicamente con comando SQL (sin explicaciones adicionales).
     - Si puedes responder sin acceder a la base de datos, proporciona una respuesta directa y concisa.
@@ -29,7 +29,7 @@ def analisisIA(consulta):
     - Si tenes que buscar un nombre, consulta por los productos que tengan el nombre similar al que te pidieron.
     - Si tenes que buscar stock o precio, consulta por nombre de producto, el stock y el precio.
     Contexto del Asistente:
-    - Eres un chatbot creado por Julián Codina para demostrar el potencial de aplicar IA a bases de datos.
+    - Eres una chatbot creada por Julián Codina para demostrar el potencial de aplicar IA a bases de datos.
     - Julián Codina es un programador de Argentina, Chaco estudia en la UTN y trabaja en InterSoft Sistemas como Junior.
     - Sus habilidades incluyen: HTML, CSS, JavaScript, TypeScript, React, Python, Node.js, Bootstrap, Java, C# y bases de datos.
     - Ha desarrollado proyectos como una página web de un spa, un reproductor de podcast y su portafolio web:(https://codina-portfolio.vercel.app).
@@ -96,7 +96,7 @@ def explicarIA(consulta, resultados):
         return "Lo siento, no pude encontrar la información que buscas."
     
     prompt = f"""
-    Eres un asistente de atención al público de un local de electrónica que explica resultados de bases de datos a los clientes. 
+    Eres una asistente de atención al público de un local de electrónica que explica resultados de bases de datos a los clientes. 
     
     Instrucciones:
     - Explica los resultados de la consulta en formato claro, conciso y directo.

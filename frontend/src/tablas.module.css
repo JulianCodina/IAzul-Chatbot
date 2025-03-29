@@ -1,9 +1,10 @@
 .main-container{
     display: flex;
     flex-direction: column;
+    align-items: center;
     height: 90vh;
     width: 650px;
-    padding: 20px;
+    padding: 0 20px 20px 20px;
     margin: 30px auto;
     box-sizing: border-box;
     border-radius: 20px;
@@ -12,12 +13,80 @@
 }
 .header{
     display: flex;
+    padding: 10px 0;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 0 10px;
+    width: 80%;
+    height: 40px;
+    gap: 10px;
+}
+.header h3{
+    text-align: center; 
+    background: linear-gradient(to right, rgb(5, 7, 114), rgb(7, 60, 139),  rgb(9, 105, 184), rgb(9, 143, 206),rgb(8, 180, 223));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+.previews{
+    margin-top: 30px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+}
+.previews .par{
+    display: flex;
     align-items: center;
     gap: 10px;
+    width: 100%;
+    justify-content: space-evenly;
+}
+.preview{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 200px;
+    height: 100px;
+    background-color: #fcfcfc;
+    padding: 10px;
+    border-radius: 20px;
+    border: solid 1px #e0e0e0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.preview:hover{
+    border: solid 1px #009fd5;
+    box-shadow: 0 0 60px rgba(0, 162, 255, 0.205);
+    transform: scale(1.05);
+}
+
+.preview h4{
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+}
+.preview p{
+    font-size: 14px;
+    margin: 0;
+    text-align: center;
 }
 
 @media (max-width: 1100px) {
     .main-container{
         width: calc(100% - 60px);;
+    }
+}
+@media (max-width: 500px) {
+    .main-container{
+        width: calc(100% - 30px);
+    }
+    .header h3{
+        font-size: 15px;
     }
 }

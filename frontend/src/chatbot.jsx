@@ -6,7 +6,7 @@ export default function Chatbot() {
     const [consulta, setConsulta] = useState("")
     const [historial, setHistorial] = useState({});
     const [espera, setEspera] = useState(false);
-    const [volume, setVolume] = useState(false);
+    const [narrador, setNarrador] = useState(false);
     const [isListening, setIsListening] = useState(false);
     const [transcript, setTranscript] = useState("");
     const [recognition, setRecognition] = useState(null);
@@ -15,7 +15,7 @@ export default function Chatbot() {
     const [voices, setVoices] = useState([]);
     const [selectedVoice, setSelectedVoice] = useState(null);
     const [respuestaIA, setRespuestaIA] = useState("");
-    const [suggestions, setSuggestions] = useState([
+    const [suggestions] = useState([
         "¿Tienen stock del iphone 14 pro?",
         "¿Cuánto cuesta la tableta grafica?",
         "¿Cuáles fueron las últimas compras?",
@@ -30,13 +30,21 @@ export default function Chatbot() {
     ]);
     const [randomSuggestions, setRandomSuggestions] = useState([]);
     const [info, setInfo] = useState(false);
-    const [user, setUser] = useState(1);
+    const [menu, setMenu] = useState(false);
+
+    const [user, setUser] = useState(2);
 
     function Info(){
         return(
             <div className={style["info-container"]}>
-                <p className={style["info-msg"]}>
-                    IAzul es un asistente experimental en fase de pruebas. Aunque me esfuerzo para que sea precisa, puede cometer errores. La información proporcionada debe ser verificada y no debe tomarse como consejo definitivo.
+                <div className={style["title"]}>
+                    <p>IAzul esta en fase de pruebas.</p>
+                    <div className={style["close"]} onClick={() => setInfo(false)}>
+                        <img src="assets/x.png"/>
+                    </div>
+                </div>
+                <p>
+                    Aunque me esfuerzo para que sea precisa, puede cometer errores. La información proporcionada debe ser verificada y no debe tomarse como consejo definitivo.
                 </p>
             </div>
         )
@@ -174,26 +182,39 @@ export default function Chatbot() {
         }
     }
     function speakText(text) {
-        if (!speechSynthesis || !selectedVoice) return;
+        if (!speechSynthesis || !selectedVoice) {
+            console.error('No hay síntesis de voz o voz seleccionada disponible');
+            return;
+        }
         
-        // Detener cualquier habla en curso
-        speechSynthesis.cancel();
-        
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'es-ES';
-        utterance.rate = 1;
-        utterance.pitch = 1;
-        utterance.voice = selectedVoice;
-        
-        utterance.onstart = () => {
-            setSpeaking(true);
-        };
-        
-        utterance.onend = () => {
+        try {
+            // Detener cualquier habla en curso
+            speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'es-ES';
+            utterance.rate = 1;
+            utterance.pitch = 1;
+            utterance.voice = selectedVoice;
+            
+            utterance.onstart = () => {
+                setSpeaking(true);
+            };
+            
+            utterance.onend = () => {
+                setSpeaking(false);
+            };
+
+            utterance.onerror = (event) => {
+                console.error('Error en la narración:', event);
+                setSpeaking(false);
+            };
+            
+            speechSynthesis.speak(utterance);
+        } catch (error) {
+            console.error('Error al intentar narrar:', error);
             setSpeaking(false);
-        };
-        
-        speechSynthesis.speak(utterance);
+        }
     }
     function CopyButton({texto}){
         const [copy, setCopy] = useState(false)
@@ -221,6 +242,14 @@ export default function Chatbot() {
         const container = document.querySelector(`.${style["msg-container"]}`);
         if (container) {
             container.scrollTop = container.scrollHeight; 
+        }
+    }
+    async function reset(){
+        setHistorial({});
+        setMenu(false);
+        const { data: datos, error } = await supabase.from('consultas_chatbot').delete().eq('id_user', user)
+        if (error) {
+            console.error('Error al eliminar los datos:', error);
         }
     }
     
@@ -255,8 +284,8 @@ export default function Chatbot() {
                         }
                     };
                 });
-                setRespuestaIA(data.mensaje);
                 setEspera(false);
+                setRespuestaIA(data.mensaje);
                 
                 // Insertar en la base de datos después de que tengamos la respuesta
                 const { error } = await supabase.from('consultas_chatbot').insert({
@@ -271,20 +300,30 @@ export default function Chatbot() {
                 }
             } catch (error) {
                 console.error("Error al llamar a la API:", error);
-                setRespuestaIA("Lo siento, ha ocurrido un error al procesar tu consulta.");
+                setHistorial(prevHistorial => {
+                    const lastKey = Object.keys(prevHistorial).pop();
+                    return {
+                        ...prevHistorial,
+                        [lastKey]: {
+                            ...prevHistorial[lastKey],
+                            "respuesta": "Lo siento, ha ocurrido un error al procesar tu consulta."
+                        }
+                    };
+                });
             } finally {
                 setEspera(false);
-                if (volume && selectedVoice && speechSynthesis) {
-                    speakText(respuestaIA);
-                }
             }
         };
-
         obtenerRespuesta();
-    }, [espera, volume, selectedVoice, speechSynthesis]); // ENVIA CONSULTA A API
+    }, [espera, narrador, selectedVoice, speechSynthesis]); // ENVIA CONSULTA A API
 
     useEffect(() => {
-        
+        if (narrador && selectedVoice && speechSynthesis) {
+            speakText(respuestaIA);
+        }
+    }, [respuestaIA]) // NARRADOR
+
+    useEffect(() => {
         if (typeof window !== 'undefined') {    // NARRADOR
             try {
                 const synthesis = window.speechSynthesis;
@@ -299,19 +338,19 @@ export default function Chatbot() {
                                 const spanishVoices = availableVoices.filter(voice => voice.lang.startsWith('es'));
                                 setVoices(spanishVoices);
                                 
-                                // Buscar la voz de Elena
-                                const elenaVoice = spanishVoices.find(voice => 
-                                    voice.name.includes('Elena') && voice.name.includes('Natural')
+                                // Buscar la voz de Sabina
+                                const sabinaVoice = spanishVoices.find(voice => 
+                                    voice.name.includes('Sabina')
                                 );
                                 
-                                if (elenaVoice) {
-                                    setSelectedVoice(elenaVoice);
+                                if (sabinaVoice) {
+                                    setSelectedVoice(sabinaVoice);
                                 } else if (spanishVoices.length > 0) {
                                     setSelectedVoice(spanishVoices[0]);
                                 }
                             }
                         } catch (error) {
-                            console.log('Error al obtener voces:', error);
+                            console.error('Error al obtener voces:', error);
                         }
                     };
 
@@ -325,16 +364,25 @@ export default function Chatbot() {
                     synthesis.onend = () => {
                         setSpeaking(false);
                     };
+
+                    synthesis.onerror = (event) => {
+                        console.error('Error en la síntesis de voz:', event);
+                        setSpeaking(false);
+                    };
                 }
             } catch (error) {
-                console.log('Error al inicializar síntesis de voz:', error);
+                console.error('Error al inicializar síntesis de voz:', error);
             }
         }
     }, []); // NARRADOR
 
     useEffect(() => {
         async function getHistorial() {
-            const { data: datos, error } = await supabase.from('consultas_chatbot').select().eq('id_user', user)
+            const { data: datos, error } = await supabase
+                .from('consultas_chatbot')
+                .select()
+                .eq('id_user', user)
+                .order('id', { ascending: true })
             
             if (error) {
                 console.error('Error al obtener datos:', error.message)
@@ -369,8 +417,14 @@ export default function Chatbot() {
 
     return (
         <div className={style["main-container"]}>
-            {info && (
-                <div className={style["dark"]}/>
+            {(info || menu) && (
+                <>
+                    {info && <Info/>}
+                    <div className={style["dark"]} onClick={() => {
+                        setMenu(false);
+                        setInfo(false);
+                    }}/>
+                </>
             )}
             <div className={style["header"]}>
                 <img className={style["avatar"]} src="assets/chatbot.png"/>
@@ -378,16 +432,34 @@ export default function Chatbot() {
                     <h3>IAzul •</h3>
                     <p>Tu asistente chatbot</p>
                 </div>
-                <div className={style["info"]} onClick={() => setInfo(!info)} onMouseLeave={() => setInfo(false)}>
-                    <img src="assets/info.png"/>
-                    {info && <Info/>}
-                </div>
-                <div className={style["volume"]} onClick={() => setVolume(!volume)}>
-                    {volume ? (
-                        <img className={style["on"]} src="assets/on.png" />
-                    ):(
-                        <img className={style["off"]} src="assets/off.png"/>
-                    )}
+                {menu && (
+                    <div className={style["options"]}>
+                            {narrador ? (
+                                <div className={style["par"]} onClick={() => setNarrador(false)}>
+                                    <img className={style["on"]} src="assets/on.png" />
+                                    <p>Narrador activo</p>
+                                </div>
+                            ):(
+                                <div className={style["par"]} onClick={() => setNarrador(true)}>
+                                    <img className={style["off"]} src="assets/off.png"/>
+                                    <p>Narrador desactivado</p>
+                                </div>
+                            )}
+                            <div className={style["par"]} onClick={() => {
+                                setMenu(false);
+                                setInfo(true)
+                            }}>
+                                <img src="assets/info.png"/>
+                                <p>Información</p>
+                            </div>
+                            <div className={style["par"]} onClick={() => reset()}>
+                                <img src="assets/reset.png"/>
+                                <p>Reiniciar historial</p>
+                            </div>
+                    </div>
+                )}
+                <div className={style["menu"]} onClick={() => setMenu(!menu)}>
+                    <img src="assets/menu.png"/>
                 </div>
             </div>
             <div className={style["msg-container"]}>

@@ -21,4 +21,5 @@ class Consulta(BaseModel):
 def responder(consulta: Consulta):
     return {"mensaje": bot.chatbot(consulta.consulta)}
 
-# Ejecutar con: uvicorn main:app --reload
+# Ejecutar con: 
+# uvicorn main:app --reload
