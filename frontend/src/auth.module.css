@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@700&family=Poppins:wght@400;500;600&display=swap');
+
+.authContainer{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  box-shadow: 10px 10px 15px rgba(0,0,0,0.05);
+  z-index: 10;
+}
+.authContainer h2{
+  text-align: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #e0e0e0;
+  margin:0 0 5px 0;
+  background: linear-gradient(to right, rgb(5, 7, 114), rgb(7, 60, 139), rgb(9, 105, 184), rgb(9, 143, 206), rgb(8, 180, 223));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.authContainer form{
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.authContainer form .txt_field{
+  display: flex;
+  border-bottom: 2px solid #e0e0e0;
+  margin: 10px 0;
+  width: 80%;
+}
+.txt_field input{
+  width: 100%;
+  padding: 0 5px;
+  height: 30px;
+  font-size: 16px;
+  border: none;
+  background: none;
+  outline: none;
+}
+.btn{
+  display: inline-block;
+  text-align: center;
+  padding: 10px;
+  border: 1px solid;
+  background-image: linear-gradient(150deg, #2ad4aa 0%, #00bfff 100%);
+  border-radius: 25px;
+  font-size: 15px;
+  color: #e9f4fb;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s ease-in-out;
+  margin: 10px auto 0;
+  box-sizing: border-box;
+  width: 45%;
+}
+.btn:hover{
+  width: 80%;
+}
+.btn p{
+  margin: 0 auto;
+}
+.signup_link{
+  margin: 10px 0 20px;
+  text-align: center;
+  font-size: 16px;
+  color: #a3a3a3;
+}
+.signup_link a{
+  color: #2691d9;
+  text-decoration: none;
+}
+.signup_link a:hover{
+  text-decoration: underline;
+}

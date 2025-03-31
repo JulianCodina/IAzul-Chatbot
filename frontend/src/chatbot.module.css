@@ -289,7 +289,6 @@
 .suggestions p:hover{
     background-image: linear-gradient(150deg, #41d1ad 0%, #009fd5 100%);
     color: #ffffff;
-    font-weight: 600;
     transition: background-color 0.3s ease;
     border: 1px solid #ffffff;
 }

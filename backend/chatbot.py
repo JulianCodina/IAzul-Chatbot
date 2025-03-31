@@ -25,9 +25,9 @@ def analisisIA(consulta):
     - Si se requiere una consulta SQL, responde con la consulta `SELECT` en una sola línea, sin texto adicional.
     - No expliques cómo generaste la consulta ni agregues detalles innecesarios.
     - Nunca juntes una respuesta rápida con un SQL, debes responder con uno u otro, nunca ambos en la misma respuesta.
-    - Si pide listados de productos, selecciona solo las columnas relevantes.
+    - Por defecto solo selecciona nombre, marca y precio. A menos que se pida algo mas.
     - Si tenes que buscar un nombre, consulta por los productos que tengan el nombre similar al que te pidieron.
-    - Si tenes que buscar stock o precio, consulta por nombre de producto, el stock y el precio.
+    - Limita las consultas a 5 resultados. A menos que se pidan mas.
     Contexto del Asistente:
     - Eres una chatbot creada por Julián Codina para demostrar el potencial de aplicar IA a bases de datos.
     - Julián Codina es un programador de Argentina, Chaco estudia en la UTN y trabaja en InterSoft Sistemas como Junior.
@@ -59,7 +59,8 @@ def analisisIA(consulta):
     - consulta: cuando Nacio Michael Jackson? | respuesta: Nació el 29 de agosto del 1958
     - consulta: que mouse tienen? | respuesta: SELECT nombre, marca, precio FROM productos WHERE nombre LIKE '%mouse%'
     - consulta: Cuál es el precio de la RTX 3080? | respuesta: SELECT nombre, marca, precio from productos where nombre like '%rtx 3080%'
-    - consulta: cual es el producto mas vendido? | respuesta: SELECT p.nombre, p.marca, p.precio, SUM(v.cantidad) AS total_vendido FROM productos p JOIN ventas v ON p.id = v.id_p GROUP BY p.nombre ORDER BY total_vendido DESC LIMIT 1;
+    - consulta: cual es el producto mas vendido? | respuesta: SELECT p.nombre, SUM(v.cantidad) AS total_vendido FROM productos p JOIN ventas v ON p.id = v.id_p GROUP BY p.nombre ORDER BY total_vendido DESC LIMIT 5;
+    - consulta: cuales fueron las ultimas compras? | respuesta: SELECT p.nombre, p.marca, p.precio, v.fecha FROM productos p JOIN compras c ON p.id = c.id_p ORDER BY v.fecha DESC LIMIT 5;
     - consulta: que celulares tienen stock? | respuesta: SELECT p.nombre, p.marca, p.precio, i.stock_actual FROM productos p JOIN inventario i ON p.id = i.id_producto WHERE i.stock_actual > 0 AND p.categoria = 'celulares';
     """
     
@@ -108,13 +109,14 @@ def explicarIA(consulta, resultados):
       * Precio
     - NO muestres otros datos como fechas, categorías o números de referencia a menos que sean específicamente solicitados.
     - Debes responder como si la empresa fuera tuya.
+    - Evitar frases como "Te recomiendo verificar el precio actual en nuestra tienda ya que puede variar." y "Si necesitas más información, no dudes en preguntar."
     
     Ejemplos:
     - consulta: cual es el producto mas vendido? | respuesta: Nuestro producto mas vendido es el "Mouse Gamer Logitech" con 100 unidades vendidas.
     - consulta: que marcas de celulares tienen? | respuesta: Tenemos marcas como Samsung, Apple, Huawei, Xiaomi y Motorola.
     - consulta: que mouse tienen? | respuesta: 
       Tenemos disponible:
-      - Mouse Gamer RGB (Logitech) - $45.99
+      - Mouse Gamer RGB (Logitech) $45.99
       
     Respuesta de la Base de Datos:
     {resultados}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import style from './chatbot.module.css'
-import supabase from '../utils/supabase'
+import { supabase } from '../utils/supabase'
 
 export default function Chatbot() {
     const [consulta, setConsulta] = useState("")
@@ -16,7 +16,8 @@ export default function Chatbot() {
     const [selectedVoice, setSelectedVoice] = useState(null);
     const [respuestaIA, setRespuestaIA] = useState("");
     const [suggestions] = useState([
-        "¿Tienen stock del iphone 14 pro?",
+        "¿Cual es el producto mas vendido?",
+        "¿Tienen stock del iphone 14?",
         "¿Cuánto cuesta la tableta grafica?",
         "¿Cuáles fueron las últimas compras?",
         "¿Cuál es el horario de atención?",
@@ -478,6 +479,8 @@ export default function Chatbot() {
                         value={consulta} 
                         placeholder="Escribe tu pregunta" 
                         onChange={handleChange}
+                        id="consulta-input"
+                        name="consulta"
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !isListening) {
                                 e.preventDefault();
