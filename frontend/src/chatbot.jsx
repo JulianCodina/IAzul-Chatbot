@@ -38,7 +38,7 @@ export default function Chatbot() {
     // COMPONENTES
     function Info(){
         return(
-            <div className={style["info-container"]}>
+            <div className={style["info-container"]} style={{ animation: info ? 'infoSlide 0.2s ease-out' : 'none' }}>
                 <div className={style["title"]}>
                     <p>IAzul esta en fase de pruebas.</p>
                     <div className={style["close"]} onClick={() => setInfo(false)}>
@@ -422,13 +422,39 @@ export default function Chatbot() {
 
     return (
         <div className={style["main-container"]}>
-            {(info || menu) && (
+            {info && (
                 <>
-                    {info && <Info/>}
-                    <div className={style["dark"]} onClick={() => {
-                        setMenu(false);
-                        setInfo(false);
-                    }}/>
+                    <Info/>
+                    <div className={style["dark"]} onClick={() => setInfo(false)}/>
+                </>
+            )}
+            {menu && (
+                <>
+                    <div className={style["options"]}>
+                        {narrador ? (
+                            <div className={style["par"]} onClick={() => setNarrador(false)}>
+                                <img className={style["on"]} src="assets/on.png" />
+                                <p>Narrador activo</p>
+                            </div>
+                        ):(
+                            <div className={style["par"]} onClick={() => setNarrador(true)}>
+                                <img className={style["off"]} src="assets/off.png"/>
+                                <p>Narrador desactivado</p>
+                            </div>
+                        )}
+                        <div className={style["par"]} onClick={() => {
+                            setMenu(false);
+                            setInfo(true)
+                        }}>
+                            <img src="assets/info.png"/>
+                            <p>Información</p>
+                        </div>
+                        <div className={style["par"]} onClick={() => reset()}>
+                            <img src="assets/reset.png"/>
+                            <p>Reiniciar historial</p>
+                        </div>
+                    </div>
+                    <div className={style["dark"]} onClick={() => setMenu(false)}/>
                 </>
             )}
             <div className={style["header"]}>
@@ -437,32 +463,6 @@ export default function Chatbot() {
                     <h3>IAzul •</h3>
                     <p>Tu asistente chatbot</p>
                 </div>
-                {menu && (
-                    <div className={style["options"]}>
-                            {narrador ? (
-                                <div className={style["par"]} onClick={() => setNarrador(false)}>
-                                    <img className={style["on"]} src="assets/on.png" />
-                                    <p>Narrador activo</p>
-                                </div>
-                            ):(
-                                <div className={style["par"]} onClick={() => setNarrador(true)}>
-                                    <img className={style["off"]} src="assets/off.png"/>
-                                    <p>Narrador desactivado</p>
-                                </div>
-                            )}
-                            <div className={style["par"]} onClick={() => {
-                                setMenu(false);
-                                setInfo(true)
-                            }}>
-                                <img src="assets/info.png"/>
-                                <p>Información</p>
-                            </div>
-                            <div className={style["par"]} onClick={() => reset()}>
-                                <img src="assets/reset.png"/>
-                                <p>Reiniciar historial</p>
-                            </div>
-                    </div>
-                )}
                 <div className={style["menu"]} onClick={() => setMenu(!menu)}>
                     <img src="assets/menu.png"/>
                 </div>
