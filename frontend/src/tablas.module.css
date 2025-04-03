@@ -25,7 +25,6 @@
     width: 100%;
     height: 100%;
     background-color: #ffffff;
-    border: solid 2px #e0e0e0;
     z-index: 10;
     transform: translateY(0);
     transition: transform 1s ease;
@@ -33,6 +32,107 @@
 }
 .gestor.hide{
     transform: translateY(120%);
+}
+@keyframes Slide {
+    from {
+        opacity: 0;
+        transform: translate(-50%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%);
+    }
+  }
+.new-item-form {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 11;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    width: 200px;
+    pointer-events: auto;
+    font-weight: 600;
+    gap: 10px;
+}
+.new-item-form.show {
+    opacity: 1;
+    visibility: visible;
+}
+.new-item-form.hide {
+    opacity: 0;
+    visibility: hidden;
+}
+.new-item-form .close{
+    position: absolute;
+    top: -25px;
+    right: 5px;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: 600;
+}
+.new-item-form input {
+    display: block;
+    width: 90%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-bottom: 1px solid #a0a0a0;
+    border-radius: 4px;
+}
+.new-item-form input:focus{
+    outline: none;
+}
+.new-item-form button{
+    width: 90%;
+    margin: 10px 0;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: #2b2b2b;
+    background-color: #e4e4e4;
+    font-weight: 600;
+    border: 1px solid #d4d4d4;
+    cursor: pointer;
+}
+.new-item-form button:hover{
+    background-color: #d4d4d4;
+    color: #181818;
+}
+
+.dark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    border-radius: inherit;
+    pointer-events: auto;
+    border-radius: 12px;
+}
+
+.dark.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.dark.hide {
+    opacity: 0;
+    visibility: hidden;
 }
 .header{
     display: flex;
@@ -50,20 +150,22 @@
 }
 .tabla-button{
     display: flex;
-    background-color: #009fd5;
+    background-color: #489dc5;
     padding: 4px 10px;
     border-radius: 15px;
     cursor: pointer;
     color: #ffffff;
     font-weight: 600;
+    
 }
 .tabla-button:hover {
-    background-color: #0fb4eb;
+    background-color: #318bb4;
 }
 .new{
     background-image: linear-gradient(150deg, #41d1ad 0%, #21b8d3 100%);
     color: #ffffff; 
     border: 1 solid #009fd5;
+    z-index: 11;
 }
 .new:hover {
     background-image: linear-gradient(150deg, #41d1ad 0%, #2adfff 100%);
@@ -175,6 +277,7 @@
     height: 100%;
     z-index: 5;
     box-sizing: border-box;
+    position: relative;
 }
 .tabla{
     display: flex;

@@ -47,18 +47,23 @@ export default function App() {
   return (
     <div className={style["app"]}>
       {login && <div className={style["dark"]} onClick={() => setLogin(false)}/>}
-      {alerta === 1 ? (
+      {alerta === 1 && (
         <div className={`${style.alerta} ${style.success} ${isHiding ? style.hide : ''}`}>
           <img src="./assets/ok.png" alt="alerta"/>
           <p>{alertaText}</p>
         </div>
-      ) : (
-        alerta === 2 && (
-          <div className={`${style.alerta} ${style.warning} ${isHiding ? style.hide : ''}`}>
-            <img src="./assets/warn.png" alt="alerta"/>
-            <p>{alertaText}</p>
-          </div>
-        )
+      )}
+      {alerta === 2 && (
+        <div className={`${style.alerta} ${style.warning} ${isHiding ? style.hide : ''}`}>
+          <img src="./assets/warn.png" alt="alerta"/>
+          <p>{alertaText}</p>
+        </div>
+      )}
+      {alerta === 3 && (
+        <div className={`${style.alerta} ${style.error} ${isHiding ? style.hide : ''}`}>
+          <img src="./assets/error.png" alt="alerta"/>
+          <p>{alertaText}</p>
+        </div>
       )}
       <div className={style["header"]}>
         {!user ? (
@@ -82,7 +87,7 @@ export default function App() {
       <div className={style["chat-table"]}>
           {login && <Auth setModal={setLogin} tipoLogin={tipoLogin} setTipoLogin={setTipoLogin} setAlerta={setAlerta} setAlertaText={setAlertaText}/>}
           <Chatbot/>
-          <Tablas/>
+          <Tablas setAlerta={setAlerta} setAlertaText={setAlertaText} setTipoLogin={setTipoLogin} setLogin={setLogin}/>
       </div>
     </div>
   )
