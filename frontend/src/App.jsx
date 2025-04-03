@@ -7,29 +7,12 @@ import { supabase } from '../utils/supabase'
 import { useAuthContext } from './AuthContext';
 
 export default function App() {
-  const { user, setUser } = useAuthContext();
+  const { user, setUser, loading } = useAuthContext();
   const [login, setLogin] = useState(false);
   const [tipoLogin, setTipoLogin] = useState("signin");
   const [alerta, setAlerta] = useState(0);
   const [alertaText, setAlertaText] = useState("");
   const [isHiding, setIsHiding] = useState(false);
-
-  /**
-   * Verifica el estado de autenticación al cargar la página y suscribe a cambios en la autenticación
-   
-  useEffect(() => {
-    // Verificar el estado de autenticación al cargar
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setIsLoggedIn(!!session);
-    });
-
-    // Suscribirse a cambios en la autenticación
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsLoggedIn(!!session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);*/
 
   useEffect(() => {
     if (alerta) {
@@ -74,11 +57,11 @@ export default function App() {
             </button>
           </>
         ) : (
-          <button className={style["login"]} onClick={() => {
-            supabase.auth.signOut();
+          <button className={style["login"]} onClick={async () => {
+            await supabase.auth.signOut();
             setUser(null);
             setAlerta(1);
-            setAlertaText("Sesion cerrada correctamente");
+            setAlertaText("Sesión cerrada correctamente");
           }}>
             <p>Cerrar sesión</p>
           </button>

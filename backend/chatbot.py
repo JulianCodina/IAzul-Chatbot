@@ -37,8 +37,8 @@ def analisisIA(consulta):
     - Para más información sobre Julián, puedes invitar a los usuarios a visitar su portafolio.
     - Fecha actual: {datetime.today()}
     Información del local:
-        Las categorias de los productos son:
-        - componentes de computadoras
+        Las categorias de productos son estas:
+        - componentes de pc
         - celulares
         - perifericos
         - electrodomesticos

@@ -60,7 +60,7 @@
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
-    width: 200px;
+    width: 230px;
     pointer-events: auto;
     font-weight: 600;
     gap: 10px;

@@ -36,6 +36,7 @@ export default function Chatbot() {
 
     const { user } = useAuthContext();
     const [userID, setUserID] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     // COMPONENTES
     function Info(){
@@ -79,7 +80,7 @@ export default function Chatbot() {
     }
     function Mensajes() {
         const inicio = new Date(2000, 1, 1, 1, 1); 
-        
+            
         if (Object.keys(historial).length === 0) {
             return <SinMsj/>;
         }
@@ -132,6 +133,20 @@ export default function Chatbot() {
                 })}
             </>
         );
+    }
+    function Loading(){
+        return(
+            <div className={style["dot-spinner"]}>
+                <div className={style["dot-spinner__dot"]}></div>
+                <div className={style["dot-spinner__dot"]}></div>
+                <div className={style["dot-spinner__dot"]}></div>
+                <div className={style["dot-spinner__dot"]}></div>
+                <div className={style["dot-spinner__dot"]}></div>
+                <div className={style["dot-spinner__dot"]}></div>
+                <div className={style["dot-spinner__dot"]}></div>
+                <div className={style["dot-spinner__dot"]}></div>
+            </div>
+        )
     }
 
     // FUNCIONES
@@ -414,6 +429,10 @@ export default function Chatbot() {
     }, []); // NARRADOR
 
     useEffect(() => {
+        setLoading(true);
+        setTimeout(() => {
+            setLoading(false);
+        }, 1000);
         if (userID == null) {
             setHistorial({});
         }else{
@@ -511,7 +530,7 @@ export default function Chatbot() {
                 </div>
             </div>
             <div className={style["msg-container"]}>
-                <Mensajes/>
+                {loading ? <Loading/> : <Mensajes/>}
             </div>
             <div className={style["input-container"]}>
                 {isListening ? (
