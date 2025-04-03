@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import style from './chatbot.module.css'
 import { supabase } from '../utils/supabase'
+import { useAuthContext } from './AuthContext';
 
 export default function Chatbot() {
     const [consulta, setConsulta] = useState("")
@@ -33,7 +34,8 @@ export default function Chatbot() {
     const [info, setInfo] = useState(false);
     const [menu, setMenu] = useState(false);
 
-    const [user, setUser] = useState(2);
+    const { user } = useAuthContext();
+    const [userID, setUserID] = useState(null);
 
     // COMPONENTES
     function Info(){
@@ -190,16 +192,13 @@ export default function Chatbot() {
             
             setRespuestaIA(data.mensaje);
             
-            // Guardamos en la base de datos
-            const { error } = await supabase.from('consultas_chatbot').insert({
-                id_user: user,
-                consulta: consulta,
-                respuesta: data.mensaje,
-                fecha: new Date().toISOString()
-            });
-            
-            if (error) {
-                console.error("Error al insertar en la base de datos:", error);
+            if (userID !== null) {
+                const { error } = await supabase.from('consultas_chatbot').insert({
+                    id_user: userID,
+                    consulta: consulta,
+                    respuesta: data.mensaje,
+                    fecha: new Date().toISOString()
+                });
             }
         } catch (error) {
             console.error("Error detallado al llamar a la API:", error);
@@ -223,14 +222,45 @@ export default function Chatbot() {
             recognitionInstance.continuous = true;
             recognitionInstance.interimResults = true;
 
+            let finalTranscript = '';
+
             recognitionInstance.onresult = (event) => {
-                const lastResult = event.results[event.results.length - 1];
-                const transcript = lastResult[0].transcript;
-                setTranscript(transcript);
+                let interimTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript + ' ';
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+
+                // Función para normalizar el texto
+                const normalizeText = (text) => {
+                    // Convertir todo a minúsculas
+                    text = text.toLowerCase();
+                    // Capitalizar la primera letra de cada oración
+                    text = text.replace(/(^\w|\.\s+\w|!\s+\w|\?\s+\w)/gm, letter => letter.toUpperCase());
+                    return text;
+                };
+
+                if (finalTranscript) {
+                    setTranscript(normalizeText(finalTranscript.trim()));
+                }
+                if (interimTranscript) {
+                    setTranscript(normalizeText(interimTranscript));
+                }
             };
 
             recognitionInstance.onerror = (event) => {
                 console.error('Error en el reconocimiento:', event.error);
+            };
+
+            recognitionInstance.onend = () => {
+                if (isListening) {
+                    recognitionInstance.start();
+                }
             };
 
             recognitionInstance.start();
@@ -312,9 +342,11 @@ export default function Chatbot() {
     async function reset(){
         setHistorial({});
         setMenu(false);
-        const { data: datos, error } = await supabase.from('consultas_chatbot').delete().eq('id_user', user)
-        if (error) {
-            console.error('Error al eliminar los datos:', error);
+        if (userID !== null) {
+            const { data: datos, error } = await supabase.from('consultas_chatbot').delete().eq('id_user', userID)
+            if (error) {
+                console.error('Error al eliminar los datos:', error);
+            }
         }
     }
     
@@ -382,31 +414,35 @@ export default function Chatbot() {
     }, []); // NARRADOR
 
     useEffect(() => {
-        async function getHistorial() {
-            const { data: datos, error } = await supabase
-                .from('consultas_chatbot')
-                .select()
-                .eq('id_user', user)
-                .order('id', { ascending: true })
+        if (userID == null) {
+            setHistorial({});
+        }else{
+            async function getHistorial() {
+                const { data: datos, error } = await supabase
+                    .from('consultas_chatbot')
+                    .select()
+                    .eq('id_user', userID)
+                    .order('id', { ascending: true })
             
-            if (error) {
-                console.error('Error al obtener datos:', error.message)
-                return
+                if (error) {
+                    console.error('Error al obtener datos:', error.message)
+                    return
+                }
+                if (datos) {
+                    const historialFormateado = datos.reduce((acc, dato) => {
+                        acc[dato.id] = {
+                            consulta: dato.consulta,
+                            respuesta: dato.respuesta,
+                            fecha: new Date(dato.fecha)
+                        };
+                        return acc;
+                    }, {});
+                    setHistorial(historialFormateado);
+                }
             }
-            if (datos) {
-                const historialFormateado = datos.reduce((acc, dato) => {
-                    acc[dato.id] = {
-                        consulta: dato.consulta,
-                        respuesta: dato.respuesta,
-                        fecha: new Date(dato.fecha)
-                    };
-                    return acc;
-                }, {});
-                setHistorial(historialFormateado);
-            }
+            getHistorial()
         }
-        getHistorial()
-    }, []) // SUPABASE
+    }, [userID]) // SUPABASE
 
     useEffect(() => {
         const availableIndexes = Array.from({length: suggestions.length}, (_, i) => i);
@@ -418,7 +454,14 @@ export default function Chatbot() {
         const selectedSuggestions = randomIndexes.map(index => suggestions[index]);
         setRandomSuggestions(selectedSuggestions);
     }, []); // SUGERENCIAS
-    
+
+    useEffect(() => {
+        if (user !== null) {
+            setUserID(user.id);
+        }else{
+            setUserID(null);
+        }
+    }, [user]); // SETEAR ID
 
     return (
         <div className={style["main-container"]}>

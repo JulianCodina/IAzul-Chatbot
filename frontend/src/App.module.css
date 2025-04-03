@@ -6,11 +6,68 @@
     min-height: 100vh;
     margin: 0 auto;
 }
+@keyframes Slide {
+    from {
+        transform: translate(-50%, -150px);
+    }
+    to {
+        transform: translate(-50%, 0);
+    }
+}
+
+@keyframes SlideOut {
+    from {
+        transform: translate(-50%, 0);
+    }
+    to {
+        transform: translate(-50%, -150px);
+    }
+}
+.alerta{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 330px;
+    padding: 10px;
+    border-radius: 2px;
+    box-shadow: 10px 10px 15px rgba(0,0,0,0.05);
+    z-index: 101;
+    animation: Slide 0.5s ease forwards;
+}
+
+.alerta.success {
+    border: 1px solid rgb(0, 192, 0);
+    border-left: 7px solid rgb(0, 192, 0);
+    background-color: rgba(198, 255, 198, 0.514);
+    color: #008000;
+}
+.alerta.warning {
+    border: 1px solid rgb(255, 165, 0);
+    border-left: 7px solid rgb(255, 165, 0);
+    background-color: rgba(255, 235, 195, 0.815);
+    color: #b96900;
+}
+.alerta img{
+    width: 20px;
+    height: 20px;
+}
+.alerta.hide {
+    animation: SlideOut 0.5s ease forwards;
+}
+.alerta p{
+    margin: 0;
+}
+
 .header{
     display: flex;
     width: auto;
     position: absolute;
-    border-radius: 0px 0px 0px 25px;
+    border-radius: 0px 0px 0px 30px;
     top: 0;
     right: 0;
     padding: 10px;
@@ -22,19 +79,35 @@
     -webkit-backdrop-filter: blur(25px);
     z-index: 100;
 }
+@keyframes hoverOpacity {
+    from {
+        opacity: 0.8;
+    }
+    to {
+        opacity: 1;
+    }
+}
 .register{
     padding: 10px 15px;
     border-radius: 25px;
     background-color: transparent;
     cursor: pointer;
     color: #fff;
-    border: 1px solid #ffffffbb;
-    opacity: 0.7;
+    border: 1px solid #ffffff94;
+    opacity: 0.8;
 }
 .register:hover{
-    border: 1px solid #fff;
     background-color: #ffffff2a;
-    opacity: 1;
+    border: 1px solid #fff;
+    animation: hoverOpacity 0.3s ease forwards;
+}
+@keyframes borderColor {
+    from {
+        border: 1px solid #1fc495;
+    }
+    to {
+        border: 1px solid #fff;
+    }
 }
 .login{
     padding: 10px 15px;
@@ -50,7 +123,7 @@
 }
 .login:hover{
     background-image: linear-gradient(150deg, #41d1ad 0%, #009fd5 100%);
-    border: 1px solid #fff;
+    animation: borderColor 0.4s ease forwards;
 }
 .chat-table{
     width: 100%;

@@ -25,7 +25,7 @@
     gap: 10px;
 }
 .titulo h3{
-    background: linear-gradient(to right, rgb(5, 8, 59), rgb(19, 156, 235));
+    background-image: linear-gradient(150deg, #41d1ad 0%, #006b8f 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -35,6 +35,23 @@
     margin: 0;
     font-size: 15px;
 }
+@keyframes rotateShadow {
+    0% {
+        box-shadow: 4px 4px 7px 0px #00f7ff99, -4px -4px 7px 0px #00f7ff99;
+    }
+    25% {
+        box-shadow: 4px -4px 7px 0px #00f7ff99, -4px 4px 7px 0px #00f7ff99;
+    }
+    50% {
+        box-shadow: -4px -4px 7px 0px #00f7ff99, 4px 4px 7px 0px #00f7ff99;
+    }
+    75% {
+        box-shadow: -4px 4px 7px 0px #00f7ff99, 4px -4px 7px 0px #00f7ff99;
+    }
+    100% {
+        box-shadow: 4px 4px 7px 0px #00f7ff99, -4px -4px 7px 0px #00f7ff99;
+    }
+}
 .header .avatar{
     width: 25px;
     height: 25px;
@@ -42,8 +59,8 @@
     padding: 3px;
     border-radius: 50%;
     border: solid 3px #ffffff;
-    box-shadow: 1px 1px 5px 1px #00f7ffb2;
     background-color: #dcf6ff;
+    animation: rotateShadow 3s infinite linear;
 }
 .menu{
     display: flex;
@@ -440,13 +457,31 @@ textarea:focus {
         background-position: 100%;
     }
 }
-.escuchando{
+@keyframes rotateShadowLite {
+    0% {
+        box-shadow: 4px 4px 7px -7px #00f7ff80, -4px -4px 7px 0px #00f7ff80;
+    }
+    25% {
+        box-shadow: 4px -4px 7px -7px #00f7ff80, -4px 4px 7px 0px #00f7ff80;
+    }
+    50% {
+        box-shadow: -4px -4px 7px -7px #00f7ff80, 4px 4px 7px 0px #00f7ff80;
+    }
+    75% {
+        box-shadow: -4px 4px 7px -7px #00f7ff80, 4px -4px 7px 0px #00f7ff80;
+    }
+    100% {
+        box-shadow: 4px 4px 7px -7px #00f7ff80, -4px -4px 7px 0px #00f7ff80;
+    }
+}
+.escuchando {
     font-weight: bold;
     background: linear-gradient(90deg, #3d71ff 25%, #6feeff 50%, #3d71ff 75%);
     background-size: 200% 100%;
     color: transparent;
     background-clip: text; /* Hace que el gradiente se aplique solo al texto */
-    animation: escuchando 0.8s infinite linear; /* Animación: duración, tipo de animación */
+    animation: escuchando 0.8s infinite linear, rotateShadowLite 3s infinite linear;
+    border-color: #00a0d57c;
 }
 .input-container .img{
     display: flex;
