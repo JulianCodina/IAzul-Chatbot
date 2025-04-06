@@ -187,9 +187,9 @@ export default function Chatbot() {
         setEspera(true);
 
         // Enviamos la consulta inmediatamente
-        enviarConsulta(consultaAEnviar, count);
+        enviarConsulta(pregunta, consultaAEnviar, count);
     }
-    async function enviarConsulta(consulta, key) {
+    async function enviarConsulta(pregunta, consultaAEnviar, key) {
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/responder`, {
                 method: 'POST',
@@ -197,7 +197,7 @@ export default function Chatbot() {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify({ consulta: consulta })
+                body: JSON.stringify({ consulta: consultaAEnviar })
             });
             
             if (!response.ok) {
@@ -220,7 +220,15 @@ export default function Chatbot() {
             if (userID !== null) {
                 const { error } = await supabase.from('consultas_chatbot').insert({
                     id_user: userID,
-                    consulta: consulta,
+                    consulta: pregunta,
+                    respuesta: data.mensaje,
+                    fecha: new Date().toISOString()
+                });
+            }
+            if (userID === null) {
+                const { error } = await supabase.from('consultas_chatbot').insert({
+                    id_user: null,
+                    consulta: pregunta,
                     respuesta: data.mensaje,
                     fecha: new Date().toISOString()
                 });
