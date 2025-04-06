@@ -154,16 +154,26 @@ export default function Chatbot() {
         setConsulta(e.target.value);
     }
     function handleSubmit(consultaDirecta = null) {
-        const consultaAEnviar = consultaDirecta || consulta;
-        if (consultaAEnviar.trim().length === 0) return;
+        const pregunta = consultaDirecta || consulta;
+        if (pregunta.trim().length === 0) return;
         if (espera) return;
+        let consultaAEnviar = pregunta;
+        
+        // Verificar si hay historial y obtener el último mensaje de forma segura
+        const keys = Object.keys(historial);
+        if (keys.length > 0) {
+            const ultimoMensaje = historial[keys[keys.length - 1]];
+            if (ultimoMensaje && ultimoMensaje.consulta && ultimoMensaje.respuesta) {
+                consultaAEnviar = "consulta anterior: " + ultimoMensaje.consulta + " respuesta: " + ultimoMensaje.respuesta + " nueva consulta:  " + pregunta;
+            }
+        }
 
         const now = new Date();
         const count = Object.keys(historial).length + 1;
 
         // Guardamos la consulta actual en una variable
         const consultaActual = {
-            "consulta": consultaAEnviar,
+            "consulta": pregunta,
             "respuesta": "Estoy pensando...",
             "fecha": now
         };
