@@ -11,7 +11,6 @@ from dotenv import load_dotenv
 load_dotenv() # Cargar las variables de entorno
 api_key = os.getenv("TOGETHER_API_KEY") 
 
-
 client = Together(api_key = api_key)
 
 

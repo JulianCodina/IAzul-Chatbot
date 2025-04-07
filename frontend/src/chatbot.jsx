@@ -154,16 +154,26 @@ export default function Chatbot() {
         setConsulta(e.target.value);
     }
     function handleSubmit(consultaDirecta = null) {
-        const consultaAEnviar = consultaDirecta || consulta;
-        if (consultaAEnviar.trim().length === 0) return;
+        const pregunta = consultaDirecta || consulta;
+        if (pregunta.trim().length === 0) return;
         if (espera) return;
+        let consultaAEnviar = pregunta;
+        
+        // Verificar si hay historial y obtener el último mensaje de forma segura
+        const keys = Object.keys(historial);
+        if (keys.length > 0) {
+            const ultimoMensaje = historial[keys[keys.length - 1]];
+            if (ultimoMensaje && ultimoMensaje.consulta && ultimoMensaje.respuesta) {
+                consultaAEnviar = "consulta anterior: " + ultimoMensaje.consulta + " respuesta: " + ultimoMensaje.respuesta + " nueva consulta:  " + pregunta;
+            }
+        }
 
         const now = new Date();
         const count = Object.keys(historial).length + 1;
 
         // Guardamos la consulta actual en una variable
         const consultaActual = {
-            "consulta": consultaAEnviar,
+            "consulta": pregunta,
             "respuesta": "Estoy pensando...",
             "fecha": now
         };
@@ -177,9 +187,9 @@ export default function Chatbot() {
         setEspera(true);
 
         // Enviamos la consulta inmediatamente
-        enviarConsulta(consultaAEnviar, count);
+        enviarConsulta(pregunta, consultaAEnviar, count);
     }
-    async function enviarConsulta(consulta, key) {
+    async function enviarConsulta(pregunta, consultaAEnviar, key) {
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/responder`, {
                 method: 'POST',
@@ -187,7 +197,7 @@ export default function Chatbot() {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify({ consulta: consulta })
+                body: JSON.stringify({ consulta: consultaAEnviar })
             });
             
             if (!response.ok) {
@@ -210,7 +220,15 @@ export default function Chatbot() {
             if (userID !== null) {
                 const { error } = await supabase.from('consultas_chatbot').insert({
                     id_user: userID,
-                    consulta: consulta,
+                    consulta: pregunta,
+                    respuesta: data.mensaje,
+                    fecha: new Date().toISOString()
+                });
+            }
+            if (userID === null) {
+                const { error } = await supabase.from('consultas_chatbot').insert({
+                    id_user: null,
+                    consulta: pregunta,
                     respuesta: data.mensaje,
                     fecha: new Date().toISOString()
                 });
