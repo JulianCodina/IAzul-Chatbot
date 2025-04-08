@@ -13,6 +13,54 @@ export default function App() {
   const [alerta, setAlerta] = useState(0);
   const [alertaText, setAlertaText] = useState("");
   const [isHiding, setIsHiding] = useState(false);
+  const [showTopButton, setShowTopButton] = useState(false);
+
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Altura total del documento
+      const documentHeight = document.documentElement.scrollHeight;
+      // Altura de la ventana
+      const windowHeight = window.innerHeight;
+      // Posición actual del scroll
+      const scrollPosition = window.scrollY;
+      
+      // Calculamos el 30% de la altura total del documento
+      const thirtyPercentPoint = documentHeight * 0.2;
+      
+      // Mostramos el botón cuando el scroll supera el 30% de la página
+      if (scrollPosition > thirtyPercentPoint) {
+        setShowTopButton(true);
+      } else {
+        setShowTopButton(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    
+    // Ejecutamos handleScroll al montar el componente para verificar la posición inicial
+    handleScroll();
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   useEffect(() => {
     if (alerta) {
@@ -67,25 +115,34 @@ export default function App() {
           </button>
         )}
       </div>
-      <nav>
+      <div 
+        className={`${style["footer"]} ${showTopButton ? style.show : ''}`}
+        onClick={scrollToTop}
+      >
+        <img src="./assets/top.png" alt="top" />
+      </div>
+      <nav id="nav">
           <div className={style["logo"]} onClick={() => {window.location.href = "#chatbot"}}>
-            <img src="./assets/chatbot.png" alt="logo"/> 
-            <h4>IAzul</h4>
-          </div>
-          <a href="#chatbot" style={{display: "flex", alignItems: "center", gap: "5px"}}>
-            <p>Conversá con la </p> <p style={{fontWeight: "bold"}}>IA</p>
-          </a>
-          <a href="https://github.com/JulianCodina/IAzul-Chatbot" target="_blank" style={{display: "flex", alignItems: "center", gap: "5px"}}>
-            <p>Ver </p> <p style={{fontWeight: "bold"}}>GitHub</p>
-          </a>
-          <a href="https://codina-portfolio.vercel.app/" target="_blank" style={{display: "flex", alignItems: "center", gap: "5px"}}>
-            <p>Visitar </p> <p style={{fontWeight: "bold"}}>Portafolio</p>
-          </a>
+          <img src="./assets/chatbot.png" alt="logo"/> 
+          <h4>IAzul</h4>
+        </div>
+        <a href="#chatbot" onClick={(e) => {
+          e.preventDefault();
+          scrollToSection('chatbot');
+        }} style={{display: "flex", alignItems: "center", gap: "5px"}}>
+          <p className={style["plano"]}>Conversá con la </p> <p className={style["plano"] + " " + style["bold"]}>IA</p>
+        </a>
+        <a href="https://github.com/JulianCodina/IAzul-Chatbot" target="_blank" style={{display: "flex", alignItems: "center", gap: "5px"}}>
+          <p className={style["plano"]}>Ver </p> <p className={style["bold"]}>GitHub</p>
+        </a>
+        <a href="https://codina-portfolio.vercel.app/" target="_blank" style={{display: "flex", alignItems: "center", gap: "5px"}}>
+          <p className={style["plano"]}>Visitar </p> <p className={style["bold"]}>Portafolio</p>
+        </a>
       </nav>
       <main>
         <div className={style["encabezado"]}>
-          <h1>Hablar con Inteligencia Artificial en línea</h1>
-          <p>Simplemente pregunta a tu chatbot de IA para generar contenido!</p>
+          <h1>Habla con IAzul, el asistente virtual</h1>
+          <p>Explorá el poder de la inteligencia artificial aplicada a un negocio real.</p>
           <div className={style["card"]}>
             <div className={style["card-inner"]}>
                 <img src="./assets/logo3d2.png" className={style["card-front"]} alt="chatbot"/>
@@ -95,19 +152,19 @@ export default function App() {
         </div>
         <section className={style["section1"]}>
           <article className={style["article1"]}>
-            <h1>Chatbot de IA: Pregunta y habla sobre cualquier cosa con la IA</h1>
+            <h1>Chatbot IAzul: Una asistente con conocimiento total del local</h1>
             <p>
-              El chatbot gratuito de AI Chatting que puede responder cualquier pregunta que puedas tener. 
-              Es fácil de usar e interactuar con él, simplemente escribe tu pregunta y obtén una respuesta. 
-              ¡Pruébalo ahora y descubre cómo puede ayudarte!
+            IAzul no solo entiende lo que decís, también conoce el funcionamiento del local de electrónica en profundidad. 
+            Puede ayudarte con dudas sobre productos, gestionar operaciones y ofrecer atención personalizada como si estuvieras 
+            hablando con una persona real.
             </p>
             <div className={style["ideas"]}>
-              <p>Cuando nació Michael Jackson</p>
-              <p>Cual es el color del cielo</p>
-              <p>Quién es el presidente de Argentina</p>
-              <p>Recomendaciones de peliculas</p>
-              <p>Quién es el presidente de Argentina</p>
-              <p>Recomendaciones de peliculas</p>
+              <p>¿Cuando nació Michael Jackson?</p>
+              <p>¿Cual es el color del cielo?</p>
+              <p>¿Quién es el presidente de Argentina?</p>
+              <p>¿Qué productos tenes en stock?</p>
+              <p>¿Cuáles fueron las últimas compras?</p>
+              <p>¿Tenes el iphone 15?</p>
             </div>
           </article>
           <div>
@@ -115,16 +172,39 @@ export default function App() {
           </div>
         </section>
         <section className={style["section2"]}>
-          <div>
+          <div className={style["img1"]}>
             <img src="./assets/img.png" alt="data base"/>
           </div>
           <article className={style["article2"]}>
-            <h1>Añade nuevos productos a la base de datos</h1>
+            <h1>Una base de datos viva, conectada al asistente</h1>
             <p>
-              Añade nuevos productos a la base de datos para que la IA pueda responder preguntas sobre ellos.
-              Es fácil de usar e interactuar con él, simplemente escribe tu pregunta y obtén una respuesta. 
-              Solo necesitas iniciar sesion.
+            Modificá el inventario, ingresá productos o registrá ventas en tiempo real. Cada cambio que hagas se refleja de 
+            inmediato en el conocimiento de IAzul, quien siempre tendrá información actualizada para responderte. Esto convierte 
+            tu gestión en algo mucho más dinámico, simple e intuitivo.
             </p>
+          </article>
+          <div className={style["img2"]}>
+            <img src="./assets/img.png" alt="data base"/>
+          </div>
+        </section>
+        <section className={style["section3"]}>
+          <article className={style["article3"]}>
+            <h1>IA en tu empresa: eficiencia, velocidad y visión de futuro</h1>
+            <p>¡Descubre el potencial ilimitado de la IA con IAzul, transformando cómo operamos y accedemos a la información!</p>
+              <div className={style["tarjetas"]}>
+                <div className={style["tarjeta"]}>
+                  <h4>¿Y si pudiera hacer mucho más?</h4>
+                  <p>Aun con todo lo que ya puede hacer, IAzul tiene muchísimo potencial sin explotar.</p>
+                </div>
+                <div className={style["tarjeta"]}>
+                  <h4>Imagina las posibilidades</h4>
+                  <p>Desde un simple portfolio personal hasta un sistema de inventario de múltiples depósitos.</p>
+                </div>
+                <div className={style["tarjeta"]}>
+                  <h4>Disponible TOTAL</h4>
+                  <p>Sin esperas. Sin barreras. Consultá lo que necesites, cuando lo necesites, y en el idioma que prefieras.</p>
+              </div>
+            </div>
           </article>
         </section>
       </main>
@@ -133,17 +213,7 @@ export default function App() {
           <Chatbot/>
           <Tablas setAlerta={setAlerta} setAlertaText={setAlertaText} setTipoLogin={setTipoLogin} setLogin={setLogin}/>
       </div>
-        <section className={style["section3"]}>
-          <article className={style["article3"]}>
-            <h1>AI Chatting: Chatea, Responde, Crea, Inspira y más</h1>
-            <p>¡Descubre ahora el potencial ilimitado de la IA con AI Chatting!</p>
-              <div className={style["tarjetas"]}>
-                <p>Imagínense todos los campos en los que se puede aplicar este programa. Seria de muchísima ayuda para cualquier empresa</p>
-                <p>Poder hablarle en el idioma que te apetezca y obtener aun asi el resultado correcto.</p>
-                <p>Lo lindo de obtener la información que nos interesa de forma tan eficiente e instantánea.</p>
-              </div>
-          </article>
-        </section>
+      <div style={{height: "0px"}} id="chatbot"/>
     </div>
   )
 }
