@@ -537,7 +537,7 @@ export default function Chatbot() {
                     <div className={style["dark"]} onClick={() => setMenu(false)}/>
                 </>
             )}
-            <div className={style["header"]}>
+            <div className={style["header"]} id="chatbot">
                 <img className={style["avatar"]} src="assets/chatbot.png"/>
                 <div className={style["titulo"]}>
                     <h3>IAzul •</h3>

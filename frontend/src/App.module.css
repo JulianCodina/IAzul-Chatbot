@@ -73,7 +73,7 @@
 .header{
     display: flex;
     width: auto;
-    position: absolute;
+    position: fixed;
     border-radius: 0px 0px 0px 30px;
     top: 0;
     right: 0;
@@ -138,7 +138,7 @@
     justify-content: space-around;
     align-items: flex-start;
     gap:10px;
-    margin-top: 35px;
+    padding: 40px 0;
 }
 @keyframes fadeIn {
     from {
@@ -160,6 +160,199 @@
     z-index: 100;
     animation: fadeIn 0.3s ease forwards;
 }
+
+nav{
+    display: flex;
+    align-items: center;
+    padding: 10px 10px 10px 40px;
+    height: 37px;
+    gap: 30px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}	
+nav .logo{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 20px;
+    cursor: pointer;
+    position: relative;
+}
+nav .logo::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(to right, #68ffd9, #16a0c2);
+  bottom: -5px;
+  left: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease-out;
+}
+nav .logo:hover::after {
+  transform: scaleX(1);
+}
+nav .logo img{
+    width: 35px;
+    height: 35px;
+}
+nav .logo h4{
+    background-image: linear-gradient(150deg, #47d3b0 0%, #16a0c2 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin:0;
+    position: relative;
+}
+nav a{
+    text-decoration: none;
+    color: #005772;
+    opacity: 0.7;
+}
+nav a:hover{
+    opacity: 1;
+}
+main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+    padding: 10px 10px 130px 10px;
+    width: 100%;
+    background: linear-gradient(150deg, #ffffffd3, #e6e6e6d3);
+    box-sizing: border-box;
+}
+main .encabezado{
+    text-align: center;
+    padding: 100px 15% 0px;
+}
+main .encabezado h1{
+    font-size: 46px;
+    font-weight: 700;
+    margin: 10px;
+    background: linear-gradient(90.36deg, #5bcbeb 29.42%, #62d8bd 50.67%, #4e66fa 73.23%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: growUp 0.8s ease forwards;
+}
+main .encabezado p{
+    font-size: 18px;
+    color: #000;
+    opacity: 0.7;
+    margin: 10px;
+    font-weight: 600;
+    animation: growUp 0.8s ease forwards;
+}
+@keyframes growUp {
+    from {
+        transform: scale(0.2);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+.card {
+width: 350px;
+height: 300px;
+margin: 1rem auto;
+perspective: 1000px;
+animation: slideUp 0.8s ease forwards;
+}
+@keyframes slideUp {
+    from {
+        transform: translateY(300px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+.card-inner {
+position: relative;
+width: 100%;
+height: 100%;
+transition: transform 0.6s;
+transform-style: preserve-3d;
+}
+.card:hover .card-inner {
+transform: rotateY(180deg);
+}
+.card-front,
+.card-back {
+position: absolute;
+width: 100%;
+height: 100%;
+backface-visibility: hidden;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 0.5rem;
+}
+.card-back {
+transform: rotateY(180deg);
+}
+
+main .section1{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin: 10px auto 0;
+    max-width: 1100px;
+}
+main .section2{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin: 10px auto 0;
+    max-width: 1100px;
+}
+article{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 55%;
+    margin-bottom: 50px;
+}
+article h1{
+    font-size: 40px;;
+    font-weight: 700;
+    color: #000;
+}
+article p{
+    color: #000;
+    font-size: 18px;
+    opacity: 0.7;
+    margin:0px;
+}
+article .ideas{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    width: 100%;
+    margin-top: 30px;
+}
+article .ideas p{
+    background-color: transparent;
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid #006bc2;
+    color: #006bc2;
+    cursor: pointer;
+    font-size: 16px;
+    font-style: italic;
+    opacity: 1;
+}
+
+
+
+
 
 @media (max-width: 1100px) {
     .chat-table {

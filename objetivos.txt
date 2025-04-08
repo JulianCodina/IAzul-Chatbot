@@ -1,13 +1,21 @@
-Principal: 
-- Chatbot funcional
-- Conectar a una Base de Datos
-
-Secundario:
-- Poder hablar
-- Login -> historial de chat
-
 pagina referencia
 https://www.aichatting.net/es/
+
+estructura html
+header
+- nav static
+-- enlace al chatbot
+-- enlace al GitHub
+- nav fixed 
+-- botones login
+main
+- article
+-- titulo
+-- párrafo
+-- conteiner
+--- palabras
+
+
 
 Textos:
 - Aun con todas las funciones que puede realizar el asistente, esta bastante limitado, no creen? De hecho, se lo podría capacitar para hacer muchas otras cosas. No es genial?
