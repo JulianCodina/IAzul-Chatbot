@@ -167,13 +167,13 @@ export default function App() {
               <p>¿Tenes el iphone 15?</p>
             </div>
           </article>
-          <div>
-            <img src="./assets/img.png" alt="chatbot" />
+          <div className={style.img}>
+            <img src="./assets/img-section1.png" alt="chatbot" />
           </div>
         </section>
         <section className={style["section2"]}>
-          <div className={style["img1"]}>
-            <img src="./assets/img.png" alt="data base"/>
+          <div className={style["img1"] + " " + style["img"]}>
+            <img src="./assets/img-section2.png" alt="data base"/>
           </div>
           <article className={style["article2"]}>
             <h1>Una base de datos viva, conectada al asistente</h1>
@@ -183,8 +183,8 @@ export default function App() {
             tu gestión en algo mucho más dinámico, simple e intuitivo.
             </p>
           </article>
-          <div className={style["img2"]}>
-            <img src="./assets/img.png" alt="data base"/>
+          <div className={style["img2"] + " " + style["img"]}>
+            <img src="./assets/img-section2.png" alt="data base"/>
           </div>
         </section>
         <section className={style["section3"]}>
